@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>METRO Plugin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 350px;
+            height: 600px;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background-color: #F6F6F6
+            
+        }
+
+        #splash-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background-color: #F6F6F6;
+            position: absolute;
+            z-index: 2;
+        }
+        .smaller {
+            font-size: 1.25em; /* Adjust based on the final size you want */
+            transform: translateY(-255px); /* Adjust based on your design */
+        }
+
+        #splash-screen h2 {
+            font-family: 'Audiowide', sans-serif;
+            color: #121315;
+            margin: 0;
+            font-size: 1.25em;
+            transition: font-size 1s ease, transform 1s ease;
+        }
+        #main-ui {
+            display: none; /* Will be displayed after the splash screen */
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+            padding: 16px;
+            height: 569px; /*Same as the body height*/
+        }
+        #main-ui h2 {
+            font-size: 1.25em; /* Slightly larger than the search bar text */
+            font-family: 'Audiowide', sans-serif;
+            margin-bottom: 20px; /* Space between the title and search bar */
+        }
+        #search-bar {
+            width: 100%; /* Adjust width as needed */
+            height: 40px; /* Fixed height for the search bar */
+            padding: 0 16px; /* Padding inside the search bar */
+            margin: 0px 0; /* Space above and below the search bar */
+            border: 1px solid #D1D1D1; /* Light grey border */
+            border-radius: 4px; /* Rounded corners */
+            font-size: 16px; /* Readable font size */
+            box-sizing: border-box; /* Includes padding in width calculation */
+        }
+
+        #search-bar::placeholder {
+            font-family: 'Poppins', sans-serif;
+            color: #60616C; /* Light grey text for the placeholder */
+        }
+
+        /* styles for list-show-window */
+        .list-show-window {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 430px;
+            width: 100%;
+            height: 100%;
+            padding: 16px; /* Padding as per your UI's spacing */
+            box-sizing: border-box; /* Include padding in width */
+            font-size: 12px; /* Size of the text */
+            text-align: center;
+        }
+        .defaulttext {
+            
+            color: #121315; 
+            width: 100%;
+            
+        }
+
+        /* Style for the button at the bottom */
+        #create-set-button {
+            width: 90%; /* Width of the button */
+            padding: 12px 20px; /* Padding inside the button */
+            margin: 0px 0; /* Margin around the button */
+            background-color: #333; /* Button background color */
+            color: white; /* Button text color */
+            border: none; /* No border */
+            border-radius: 4px; /* Rounded corners */
+            font-family: 'Poppins', sans-serif; /* Button font */
+            font-size: 14px; /* Button text size */
+            cursor: pointer; /* Cursor to indicate it's clickable */
+            position: absolute; /* Position it at the bottom */
+            bottom: 16px; /* Distance from the bottom */
+            left: 50%; /* Start at 50% from the left */
+            transform: translateX(-50%); /* Center the button horizontally */
+            box-sizing: border-box; /* Include padding and border in the width */
+        }
+
+        #set-new-page {
+          display: none; /* Initially hidden, shown after clicking 'Create a new set' */
+          flex-direction: column;
+          align-items: center; /* Center items horizontally */
+          padding: 16px;
+          height: 569px; /* Same as the body height */
+          
+}
+
+        #set-new-page h2 {
+          font-size: 1.25em;
+          font-family: 'Audiowide', sans-serif;
+          margin-bottom: 20px; /* Space between the title and the back-and-title section */
+}
+
+        #back-and-title {
+          display: flex;
+          align-items: center;
+          gap: 8px; /* Space between the chevron and the title */
+          margin-bottom: 20px; /* Space below this section */
+          width: 100%; /* Ensure the flex container spans the full width */
+          justify-content: flex-start; /* Align content to the start (left) */
+          position: absolute; /* Positioning it absolutely will take it out of the normal flow */
+          top: 80px; /* Position it at the top */
+          left: 16px; /* Position it to the left */
+              
+}
+
+        
+      </style>
+</head>
+<body>
+
+  <!-- SPLASH SCREEN -->
+    <div id="splash-screen">
+        <h2 id="splash-text">METRO</h2>
+    </div>
+
+    <!-- MAIN LANDING PAGE -->
+    <div id="main-ui">
+        <h2>METRO</h2>
+        <input type="text" id="search-bar" placeholder="Search">
+        <div class="list-show-window">
+            <label id="defaulttext">You don’t have any linked frames.<br>Create a new one.</label>
+        </div>
+        <button id="create-set-button">Create a new set</button>
+    </div>
+
+    <!-- New page content (initially hidden) -->
+    <div id="set-new-page" style="display: none;">
+      <!-- Content of the new page goes here -->
+      <h2>METRO</h2>
+      
+        <div id="back-and-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#000000" viewBox="0 0 256 256" id="back-chevron" style="cursor:pointer;">
+          <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
+          </svg>
+          <span id="create-set-title" style="font-weight:400; font-size:14px; vertical-align:middle;">Create a new set</span>
+        </div>
+
+      <button id="create-set-button">Create</button>
+      
+  </div>
+
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                var splashText = document.getElementById("splash-text");
+                splashText.classList.add("smaller");
+                setTimeout(function() {
+                    document.getElementById("splash-screen").style.display = "none";
+                    document.getElementById("main-ui").style.display = "flex";
+                }, 1000); // Wait for 1 second for animation to complete
+            }, 1000); // 1000 milliseconds = 1 second for the splash screen
+
+
+        // Get the button and the content containers
+        var createSetButton = document.getElementById("create-set-button");
+        var mainUI = document.getElementById("main-ui");
+        var newSetPage = document.getElementById("set-new-page");
+
+        // Event listener for the button
+        createSetButton.addEventListener('click', function() {
+            // Hide the current content
+            mainUI.style.display = 'none';
+
+            // Show the new page content
+            newSetPage.style.display = "flex";
+        });
+
+        // Get the back chevron element
+        var backChevron = document.getElementById("back-chevron");
+
+        // Event listener for the back chevron
+        backChevron.addEventListener('click', function() {
+            // Show the main UI
+            mainUI.style.display = "flex";
+            // Hide the new set page
+            newSetPage.style.display = "none";
+        });
+    });
+
+
+</script>
+</body>
+</html>
