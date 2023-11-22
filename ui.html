@@ -6,6 +6,8 @@
     <title>METRO Plugin</title>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 
     <style>
         body, html {
@@ -137,6 +139,47 @@
               
 }
 
+        /* Style for the card container */
+        .card {
+          background-color: #FFFFFF; /* White background */
+          border-radius: 4px; /* Rounded corners for the card */
+          padding: 16px; /* Padding inside the card */
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: Adds a subtle shadow to the card */
+          width: 100%; /* Width of the card */
+          box-sizing: border-box; /* Include padding and border in the width */
+          margin-top: 40px; /* Adjust as needed to position below 'Create a new set' */
+          align-self: center; /* Align the card to the center of its parent */
+
+}
+
+        /* Style for the input field */
+        #set-name-input {
+            width: 100%; /* Full width of the card */
+            padding: 10px; /* Padding inside the input field */
+            margin-bottom: 8px; /* Space below the input field */
+            border: 1px solid #D1D1D1; /* Light grey border */
+            border-radius: 4px; /* Rounded corners */
+            font-size: 14px; /* Font size */
+            box-sizing: border-box; /* Include padding and border in the width */
+        }
+
+          /* Style for the message */
+          #frames-list .message {
+            font-size: 12px; /* Font size for the message */
+            padding-top: 8px;
+            padding-bottom: 8px;
+            color: #60616C; /* Color for the message text */
+}
+        /* Style for the frame names */
+          .frame-name {
+            font-family: 'IBM Plex Mono', monospace; /* IBM Plex Mono font */
+            font-size: 12px; 
+            color: #121315; 
+            
+            
+  }
+
+
         
       </style>
 </head>
@@ -169,8 +212,15 @@
           <span id="create-set-title" style="font-weight:400; font-size:14px; vertical-align:middle;">Create a new set</span>
         </div>
 
+        <!-- Card container for entering a name for the set and a message -->
+        <div class="card">
+          <input type="text" id="set-name-input" placeholder="Enter a name for this set">
+          <div id="frames-list" class="message">Select the frames you want to link together</div>
+        </div>
+
+
       <button id="create-set-button">Create</button>
-      
+
   </div>
 
 
@@ -213,6 +263,38 @@
             newSetPage.style.display = "none";
         });
     });
+
+                  // This function updates the UI with the selected frame names
+function updateFramesList(frameNames) {
+    const framesListContainer = document.getElementById('frames-list');
+
+    if (frameNames.length > 0) {
+        // Clear the container and remove the 'message' class
+        framesListContainer.innerHTML = '';
+        framesListContainer.classList.remove('message');
+
+        // Create a list of frame names
+        frameNames.forEach(name => {
+            const frameNameElement = document.createElement('p');
+            frameNameElement.textContent = name;
+            frameNameElement.className = 'frame-name';
+            framesListContainer.appendChild(frameNameElement);
+        });
+    } else {
+        // If no frames are selected, reset to the default message with class
+        framesListContainer.innerHTML = '<div class="message">Select the frames you want to link together</div>';
+    }
+}
+
+
+    // Listen for messages sent from the plugin code
+    onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+
+        if (msg.type === 'update-frames') {
+            updateFramesList(msg.frameNames);
+        }
+    };
 
 
 </script>
