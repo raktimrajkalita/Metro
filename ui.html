@@ -59,7 +59,7 @@
             width: 100%; /* Adjust width as needed */
             height: 40px; /* Fixed height for the search bar */
             padding: 0 16px; /* Padding inside the search bar */
-            margin: 0px 0; /* Space above and below the search bar */
+            margin-bottom: 8px; /* Space above and below the search bar */
             border: 1px solid #D1D1D1; /* Light grey border */
             border-radius: 4px; /* Rounded corners */
             font-size: 16px; /* Readable font size */
@@ -72,24 +72,41 @@
         }
 
         /* styles for list-show-window */
-        .list-show-window {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 430px;
-            width: 100%;
-            height: 100%;
-            padding: 16px; /* Padding as per your UI's spacing */
-            box-sizing: border-box; /* Include padding in width */
-            font-size: 12px; /* Size of the text */
-            text-align: center;
-        }
+              .list-show-window {
+          display: flex;
+          flex-direction: column; /* Stack cards vertically */
+          align-items: center; /* Align cards in the center */
+          justify-content: flex-start; /* Start from the top */
+          width: 100%;
+          box-sizing: border-box;
+          overflow-y: auto; /* Enable scrolling if content overflows */
+          padding-top: 8px;
+}
+
         .defaulttext {
             
             color: #121315; 
             width: 100%;
             
+        }
+
+        /* Style for the button at the bottom */
+        #bottom-button {
+            width: 90%; /* Width of the button */
+            padding: 12px 20px; /* Padding inside the button */
+            margin: 0px 0; /* Margin around the button */
+            background-color: #333; /* Button background color */
+            color: white; /* Button text color */
+            border: none; /* No border */
+            border-radius: 4px; /* Rounded corners */
+            font-family: 'Poppins', sans-serif; /* Button font */
+            font-size: 14px; /* Button text size */
+            cursor: pointer; /* Cursor to indicate it's clickable */
+            position: absolute; /* Position it at the bottom */
+            bottom: 16px; /* Distance from the bottom */
+            left: 50%; /* Start at 50% from the left */
+            transform: translateX(-50%); /* Center the button horizontally */
+            box-sizing: border-box; /* Include padding and border in the width */
         }
 
         /* Style for the button at the bottom */
@@ -152,6 +169,17 @@
 
 }
 
+        .frame-display-card {
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            padding: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 16px; /* Space between cards */
+            width: 100%;
+            box-sizing: border-box;
+}
+
+
         /* Style for the input field */
         #set-name-input {
             width: 100%; /* Full width of the card */
@@ -179,6 +207,46 @@
             
   }
 
+  /* Style for the link set name as a button */
+.link-set-name-button {
+    background-color: #E5E5E5; /* Example light gray background */
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin-right: 8px; /* Space between this button and the 'Add frame' button */
+    font-family: 'Poppins', sans-serif; /* Poppins font */
+    font-size: 14px; /* Example font size */
+    cursor: pointer;
+}
+
+/* Style for the 'Add frame' button */
+.add-frame-button {
+    background-color: #8CCA08; /* Example green background */
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    color: white; /* White text color */
+    font-family: 'Poppins', sans-serif; /* Poppins font */
+    font-size: 14px; /* Example font size */
+    cursor: pointer;
+}
+
+/* Style for the container of the frame names */
+.frame-names-container {
+    font-family: 'IBM Plex Mono', monospace; /* IBM Plex Mono font */
+    font-size: 12px;
+    color: #121315; /* Example text color */
+    margin-top: 8px; /* Space below the 'Add frame' button */
+}
+
+/* Style for individual frame names */
+.frame-name {
+    padding: 4px 0; /* Example padding */
+    border-bottom: 1px solid #EAEAEA; /* Example border */
+    margin-bottom: 8px; /* Space below each frame name */
+}
+
+
 
         
       </style>
@@ -197,7 +265,7 @@
         <div class="list-show-window">
             <label id="defaulttext">You don’t have any linked frames.<br>Create a new one.</label>
         </div>
-        <button id="create-set-button">Create a new set</button>
+        <button id="bottom-button">Create a new set</button>
     </div>
 
     <!-- New page content (initially hidden) -->
@@ -239,7 +307,7 @@
 
 
         // Get the button and the content containers
-        var createSetButton = document.getElementById("create-set-button");
+        var createSetButton = document.getElementById("bottom-button");
         var mainUI = document.getElementById("main-ui");
         var newSetPage = document.getElementById("set-new-page");
 
@@ -263,6 +331,15 @@
             newSetPage.style.display = "none";
         });
     });
+
+    
+    document.getElementById('create-set-button').addEventListener('click', function() {
+    const setName = document.getElementById('set-name-input').value;
+    parent.postMessage({ pluginMessage: { type: 'create-link-set', setName: setName } }, '*');
+});
+
+
+
 
                   // This function updates the UI with the selected frame names
 function updateFramesList(frameNames) {
@@ -289,14 +366,63 @@ function updateFramesList(frameNames) {
 
     // Listen for messages sent from the plugin code
     onmessage = (event) => {
+      console.log('Message received:', event.data.pluginMessage);
         const msg = event.data.pluginMessage;
 
         if (msg.type === 'update-frames') {
             updateFramesList(msg.frameNames);
         }
+        else if (msg.type === 'display-all-links') {
+    const allLinks = msg.allLinks;
+    const listShowWindow = document.querySelector('.list-show-window');
+    listShowWindow.innerHTML = ''; // Clear existing content
+
+    if (allLinks.length === 0) {
+        listShowWindow.innerHTML = '<label id="defaulttext">You don’t have any linked frames.<br>Create a new one.</label>';
+    } else {
+        allLinks.forEach(linkSet => {
+            const card = document.createElement('div');
+            card.className = 'card'; // Use the existing 'card' class
+
+            // Create and append the link set name button
+            const setNameButton = document.createElement('button');
+            setNameButton.textContent = linkSet[0]; // The name of the link set
+            setNameButton.className = 'link-set-name-button';
+            card.appendChild(setNameButton);
+
+            // Create and append the 'Add frame' button
+            const addFrameButton = document.createElement('button');
+            addFrameButton.textContent = 'Add frame';
+            addFrameButton.className = 'add-frame-button';
+            card.appendChild(addFrameButton);
+
+            // Create a container for the frame names
+            const frameNamesContainer = document.createElement('div');
+            frameNamesContainer.className = 'frame-names-container';
+
+            // Add frame names to the container
+            linkSet.slice(1).forEach(frameDetails => {
+                const frameName = document.createElement('p');
+                frameName.textContent = frameDetails.name; // Name of each frame
+                frameName.className = 'frame-name'; // Apply styles to frame name
+                frameNamesContainer.appendChild(frameName);
+            });
+
+            // Append the container to the card
+            card.appendChild(frameNamesContainer);
+
+            // Append the card to the list show window
+            listShowWindow.appendChild(card);
+        });
+    }
+}
+
+
     };
 
 
 </script>
 </body>
 </html>
+
+
